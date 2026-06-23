@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RustChain vs Bitcoin: Two Different Ideas of Proof</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <article>
+      <p class="meta">Comparison article for bounty #727</p>
+      <h1>RustChain vs Bitcoin: Two Different Ideas of Proof</h1>
+      <p class="lede">Bitcoin proves work through hash power. RustChain tries to prove real physical machines through hardware fingerprints and antiquity multipliers. Both are proof systems, but they reward very different behavior.</p>
+
+      <p>Bitcoin's proof-of-work is the most tested consensus design in cryptocurrency. It is simple to describe: miners search for valid block hashes, and the network accepts the chain with the most accumulated work. That design made Bitcoin hard to rewrite, easy to verify, and globally credible. Its tradeoff is also well known. Mining power tends to move toward specialized ASIC hardware, cheap electricity, and large operators who can buy equipment at scale.</p>
+
+      <p>RustChain starts from almost the opposite assumption. Its public materials describe Proof-of-Antiquity as "1 CPU = 1 Vote." Each unique hardware device gets one participation slot per epoch, and reward shares are weighted by the device's antiquity multiplier. The project links are the RustChain explorer/site at <a href="https://rustchain.org">rustchain.org</a>, the repository at <a href="https://github.com/Scottcjn/Rustchain">github.com/Scottcjn/Rustchain</a>, and the bounty board at <a href="https://github.com/Scottcjn/rustchain-bounties">github.com/Scottcjn/rustchain-bounties</a>.</p>
+
+      <h2>What Each Network Rewards</h2>
+      <table>
+        <thead>
+          <tr><th>Question</th><th>Bitcoin</th><th>RustChain</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>What proves eligibility?</td><td>Hash work accepted by network difficulty</td><td>Hardware attestation and unique physical-machine identity</td></tr>
+          <tr><td>What improves rewards?</td><td>More efficient hash rate and cheaper power</td><td>Higher antiquity multiplier on verified hardware</td></tr>
+          <tr><td>What hardware wins?</td><td>Modern ASIC miners</td><td>Diverse real machines, including vintage systems</td></tr>
+          <tr><td>Main risk</td><td>Industrial mining concentration</td><td>Emulation or fingerprint spoofing if checks are weak</td></tr>
+        </tbody>
+      </table>
+
+      <p>Bitcoin is stronger if the goal is conservative monetary settlement with a massive security budget. RustChain is stronger if the goal is a DePIN-style experiment where the network wants to discover, verify, and reward real machines. In Bitcoin, an old PowerBook is irrelevant. In RustChain, that same machine may be more valuable precisely because it is old and harder to replace.</p>
+
+      <h2>Energy and Hardware Lifecycle</h2>
+      <p>Bitcoin's energy use is not accidental; it is how the network makes attacks expensive. Defenders argue that miners use stranded power, stabilize grids, and convert electricity into monetary finality. Critics argue that the system creates an endless hardware race and pushes older equipment out of profitability.</p>
+
+      <p>RustChain's argument is different. It does not ask machines to burn as much power as possible. It asks them to prove they are real, then weights rewards by antiquity. The network README gives example reward weights where a G4 Mac at 2.5x earns more per epoch than a modern PC at 1.0x. That flips the replacement incentive. Instead of buying the newest miner, a participant may maintain older working hardware.</p>
+
+      <h2>Decentralization Tradeoffs</h2>
+      <p>Bitcoin decentralization is mostly economic and geographic. Anyone can verify the chain, but profitable mining is specialized. RustChain decentralization is physical and architectural. It wants many machine types: x86, PowerPC, ARM, MIPS, SPARC, RISC-V, and other older or unusual platforms. That is attractive because hardware monocultures are fragile. It is also harder to validate reliably, because the network must distinguish real diversity from synthetic diversity.</p>
+
+      <p>The six fingerprint checks named by RustChain are clock-skew and oscillator drift, cache timing, SIMD unit identity, thermal drift entropy, instruction path jitter, and anti-emulation detection. The server also cross-validates architecture claims and detects clustering patterns such as many "different" machines sharing the same ROM hash. Those checks are RustChain's version of mining difficulty: they are the gate that makes cheating costly.</p>
+
+      <h2>Fair Comparison</h2>
+      <p>Bitcoin has the advantage in maturity, liquidity, brand, tooling, and adversarial testing. RustChain cannot claim that level of proven security. Its token liquidity is early and its published RTC dollar figure is an internal reference rate for bounty accounting, not a guaranteed market price.</p>
+
+      <p>RustChain has the advantage in originality. It explores a resource Bitcoin does not price: old but functional physical hardware. That makes it less like a Bitcoin replacement and more like a different research path. Bitcoin asks whether energy-backed digital money can stay neutral. RustChain asks whether verified machines and AI agents can form an economy around real hardware identity.</p>
+
+      <p>The short version: Bitcoin is proof by expenditure. RustChain is proof by presence. One secures value by making hashes expensive. The other tries to make fake machines expensive and old real machines useful again.</p>
+
+      <footer>
+        <p>Disclosure: prepared with OpenAI Codex assistance and checked against public source links. Bounty claim wallet: <code>RTC5b1707df70157327db8630cd0b862857b2b848bd</code>.</p>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

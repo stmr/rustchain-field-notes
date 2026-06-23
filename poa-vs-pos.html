@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proof-of-Antiquity vs Proof-of-Stake: Hardware Fairness or Capital Efficiency?</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <article>
+      <p class="meta">Comparison article for bounty #727</p>
+      <h1>Proof-of-Antiquity vs Proof-of-Stake: Hardware Fairness or Capital Efficiency?</h1>
+      <p class="lede">Proof-of-stake makes attacks expensive by putting capital at risk. Proof-of-Antiquity tries to make fake participation expensive by tying rewards to verified physical machines.</p>
+
+      <p>Proof-of-stake became the dominant low-energy alternative to proof-of-work. Its core idea is elegant: validators lock tokens, produce or attest to blocks, and risk penalties if they break protocol rules. Instead of buying ASICs and electricity, participants secure the network with capital. This reduces energy use and can support fast, efficient networks.</p>
+
+      <p>RustChain's Proof-of-Antiquity has a different theory of fairness. It does not start with capital. It starts with hardware identity. The RustChain README describes a "1 CPU = 1 Vote" model where each unique hardware device gets one consensus participation slot per epoch, then reward shares are weighted by antiquity multipliers. Public links: <a href="https://rustchain.org">RustChain site/explorer</a>, <a href="https://github.com/Scottcjn/Rustchain">RustChain GitHub</a>, and <a href="https://github.com/Scottcjn/rustchain-bounties">bounty board</a>.</p>
+
+      <h2>What Is Scarce?</h2>
+      <table>
+        <thead>
+          <tr><th>Model</th><th>Scarce input</th><th>Who has advantage?</th><th>What must be defended?</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Proof-of-Stake</td><td>Tokens locked at risk</td><td>Large holders and professional validators</td><td>Slashing rules, validator diversity, governance capture</td></tr>
+          <tr><td>Proof-of-Antiquity</td><td>Verified machine identity and hardware age</td><td>Owners of real, diverse, older hardware</td><td>Anti-emulation, fingerprint quality, false-positive handling</td></tr>
+        </tbody>
+      </table>
+
+      <p>Proof-of-stake is efficient because capital is easy for software to measure. A chain can verify balances, signatures, and validator status without knowing anything about the physical world. Proof-of-Antiquity is harder because it intentionally reaches into the physical world. It asks whether a machine's timing, cache behavior, SIMD identity, thermal drift, and instruction jitter look like real hardware rather than a VM or emulator.</p>
+
+      <h2>Fairness Means Different Things</h2>
+      <p>In proof-of-stake, fairness often means proportional ownership: if you risk more stake, you receive more validator weight. That is rational, but it can concentrate influence. Wealth compounds if rewards return to the largest stakers, unless protocol design, delegation culture, or social norms counterbalance it.</p>
+
+      <p>In Proof-of-Antiquity, fairness is closer to hardware pluralism. Faster CPUs do not get extra votes merely because they are faster. The RustChain README example shows a G4 Mac at 2.5x, a G5 Mac at 2.0x, and a modern PC at 1.0x. The old hardware earns more because its physical scarcity and preservation value are part of the security story. That is not capital efficiency. It is preservation efficiency.</p>
+
+      <h2>Energy and Sustainability</h2>
+      <p>Proof-of-stake is much more energy-efficient than proof-of-work because validators do not compete through endless hashing. Proof-of-Antiquity also avoids a raw hash-rate race, but its sustainability claim is different. It wants to reduce e-waste by paying people to keep working machines alive. That includes old laptops, PowerPC systems, ARM boards, and other platforms that normal crypto mining would ignore.</p>
+
+      <p>The two models can both be low-energy, but they value different things. Proof-of-stake values economic finality. Proof-of-Antiquity values the continued existence of diverse physical machines.</p>
+
+      <h2>Security Tradeoffs</h2>
+      <p>Proof-of-stake has known hard problems: long-range attacks, validator cartels, liquid staking concentration, governance capture, and the social layer required to handle catastrophic slashing events. Mature PoS systems have sophisticated mitigations, but the risks are still debated.</p>
+
+      <p>Proof-of-Antiquity has a newer set of problems. It must prevent spoofed hardware farms. It must identify machines without requiring users to trust opaque attestation hardware. It must keep checks portable across architectures. It must not punish honest weird machines just because they do not fit the common profile. RustChain's named defenses include clock-skew and oscillator drift, cache timing, SIMD unit identity, thermal drift entropy, instruction path jitter, anti-emulation detection, server-side architecture cross-validation, ROM clustering checks, and timing-distribution analysis.</p>
+
+      <h2>Which Is Better?</h2>
+      <p>For a large general-purpose smart-contract network, proof-of-stake is currently the practical answer. It scales better institutionally, has deep tooling, and is easier for exchanges, custodians, and validators to operate. For a network about verified machines, agent infrastructure, and old hardware preservation, Proof-of-Antiquity is more conceptually aligned.</p>
+
+      <p>The best comparison is not "old hardware beats staking." It is "these models price different scarce resources." Proof-of-stake prices capital. Proof-of-Antiquity prices real machine identity, age, and diversity. Capital is easier to measure. Physical authenticity is messier, but it points to a part of the world blockchains usually ignore.</p>
+
+      <p>That makes RustChain worth studying even if it remains a niche experiment. It challenges a common assumption: that blockchain consensus must be secured only by money or electricity. Proof-of-Antiquity suggests a third category, where preserved machines themselves become part of the ledger's trust model.</p>
+
+      <footer>
+        <p>Disclosure: prepared with OpenAI Codex assistance and checked against public source links. Bounty claim wallet: <code>RTC5b1707df70157327db8630cd0b862857b2b848bd</code>.</p>
+      </footer>
+    </article>
+  </main>
+</body>
+</html>

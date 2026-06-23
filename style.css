@@ -1,0 +1,144 @@
+:root {
+  color-scheme: light;
+  --bg: #f7f7f2;
+  --ink: #1b1d1c;
+  --muted: #5d625f;
+  --line: #d7d8cf;
+  --accent: #27635a;
+  --panel: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 18px/1.6 Georgia, "Times New Roman", serif;
+}
+
+main {
+  width: min(920px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0;
+}
+
+header,
+article,
+footer {
+  max-width: 760px;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.15;
+  margin: 0 0 16px;
+}
+
+h1 {
+  font-size: clamp(2.2rem, 6vw, 4.4rem);
+  letter-spacing: 0;
+}
+
+h2 {
+  margin-top: 40px;
+  font-size: 1.8rem;
+}
+
+h3 {
+  margin-top: 28px;
+  font-size: 1.25rem;
+}
+
+p {
+  margin: 0 0 18px;
+}
+
+a {
+  color: var(--accent);
+}
+
+.kicker,
+.meta {
+  color: var(--accent);
+  font: 700 0.78rem/1.2 system-ui, sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lede {
+  color: var(--muted);
+  font-size: 1.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 36px 0;
+}
+
+.card {
+  display: grid;
+  min-height: 190px;
+  align-content: start;
+  gap: 10px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  color: inherit;
+  text-decoration: none;
+}
+
+.card span,
+.card small {
+  color: var(--muted);
+  font: 0.9rem/1.4 system-ui, sans-serif;
+}
+
+.card strong {
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+article {
+  padding-top: 12px;
+}
+
+blockquote {
+  margin: 28px 0;
+  padding: 4px 0 4px 20px;
+  border-left: 4px solid var(--accent);
+  color: var(--muted);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 24px 0;
+  font-size: 0.95rem;
+}
+
+th,
+td {
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+code {
+  font: 0.95em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+footer {
+  margin-top: 48px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font: 0.95rem/1.5 system-ui, sans-serif;
+}
