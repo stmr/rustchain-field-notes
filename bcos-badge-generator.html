@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BCOS Badge Generator</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: #0c1110;
+      color: #e7f5e7;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    main {
+      width: min(1040px, calc(100% - 28px));
+    }
+
+    header,
+    article,
+    footer {
+      max-width: none;
+    }
+
+    h1 {
+      color: #a7f3d0;
+      font-size: clamp(2rem, 6vw, 3.9rem);
+      text-shadow: 0 0 18px rgba(45, 212, 191, 0.24);
+    }
+
+    a {
+      color: #67e8f9;
+    }
+
+    .lede,
+    .muted {
+      color: #9db7af;
+    }
+
+    .terminal {
+      border: 1px solid rgba(103, 232, 249, 0.35);
+      border-radius: 8px;
+      background: #111817;
+      box-shadow: inset 0 0 0 1px rgba(167, 243, 208, 0.08);
+      padding: 18px;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 16px;
+      margin-top: 26px;
+      align-items: start;
+    }
+
+    label {
+      display: block;
+      margin: 0 0 8px;
+      color: #a7f3d0;
+      font: 700 0.9rem/1.3 system-ui, sans-serif;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      width: 100%;
+      border: 1px solid rgba(103, 232, 249, 0.35);
+      border-radius: 6px;
+      background: #07100f;
+      color: #e7f5e7;
+      font: 0.95rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 11px 12px;
+    }
+
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 11px 12px;
+      background: #134e4a;
+      font-weight: 700;
+    }
+
+    .stack {
+      display: grid;
+      gap: 14px;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .preview {
+      display: grid;
+      place-items: center;
+      min-height: 124px;
+      border: 1px dashed rgba(167, 243, 208, 0.35);
+      border-radius: 8px;
+      background: #07100f;
+      padding: 18px;
+    }
+
+    .preview img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .status {
+      min-height: 24px;
+      color: #fde68a;
+      font-size: 0.88rem;
+    }
+
+    .facts {
+      display: grid;
+      gap: 8px;
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+      color: #9db7af;
+      font-size: 0.9rem;
+    }
+
+    .facts strong {
+      color: #e7f5e7;
+    }
+
+    @media (max-width: 780px) {
+      .tool-grid,
+      .button-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <article>
+      <p class="meta">Bounty #2292 tool</p>
+      <h1>BCOS Badge Generator</h1>
+      <p class="lede">Generate copy-paste badges for RustChain BCOS v2 certificates. Enter a certificate id such as <code>BCOS-abc123</code> or paste text containing one. The tool builds Markdown and HTML embed code, shows a live badge preview when the certificate endpoint exists, and falls back to a local preview for unpublished examples.</p>
+
+      <section class="tool-grid" aria-label="BCOS badge generator">
+        <div class="terminal stack">
+          <div>
+            <label for="input">Repo URL or cert_id</label>
+            <input id="input" value="BCOS-demo" autocomplete="off">
+          </div>
+
+          <div>
+            <label for="style">Badge style</label>
+            <select id="style">
+              <option value="flat">flat</option>
+              <option value="flat-square">flat-square</option>
+              <option value="for-the-badge">for-the-badge</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="endpoint">Badge host</label>
+            <select id="endpoint">
+              <option value="https://50.28.86.131/bcos/badge/">50.28.86.131 endpoint from bounty text</option>
+              <option value="https://rustchain.org/bcos/badge/">rustchain.org mirror</option>
+            </select>
+          </div>
+
+          <button id="generate" type="button">Generate badge code</button>
+
+          <ul class="facts">
+            <li><strong>Verify base:</strong> <span id="verifyBase">https://rustchain.org/bcos/verify/</span></li>
+            <li><strong>Cert id:</strong> <span id="certId">BCOS-demo</span></li>
+            <li><strong>Live check:</strong> <span id="liveStatus">waiting</span></li>
+          </ul>
+        </div>
+
+        <div class="terminal stack">
+          <div class="preview">
+            <a id="previewLink" href="https://rustchain.org/bcos/verify/BCOS-demo">
+              <img id="preview" alt="BCOS badge preview">
+            </a>
+          </div>
+
+          <div class="status" id="status">Ready.</div>
+
+          <div>
+            <label for="markdown">Markdown</label>
+            <textarea id="markdown" readonly></textarea>
+          </div>
+
+          <div>
+            <label for="html">HTML</label>
+            <textarea id="html" readonly></textarea>
+          </div>
+
+          <div class="button-row">
+            <button id="copyMarkdown" type="button">Copy Markdown</button>
+            <button id="copyHtml" type="button">Copy HTML</button>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p>Expected production endpoint from the bounty: <code>GET /bcos/badge/{cert_id}.svg</code>. Verification page: <a href="https://rustchain.org/bcos/">rustchain.org/bcos</a>. Bounty claim wallet: <code>RTC5b1707df70157327db8630cd0b862857b2b848bd</code>.</p>
+      </footer>
+    </article>
+  </main>
+
+  <script>
+    const input = document.getElementById('input');
+    const style = document.getElementById('style');
+    const endpoint = document.getElementById('endpoint');
+    const certId = document.getElementById('certId');
+    const markdown = document.getElementById('markdown');
+    const html = document.getElementById('html');
+    const preview = document.getElementById('preview');
+    const previewLink = document.getElementById('previewLink');
+    const status = document.getElementById('status');
+    const liveStatus = document.getElementById('liveStatus');
+
+    function cleanCertId(value) {
+      const match = String(value).trim().match(/BCOS[-_][A-Za-z0-9.-]+/i);
+      if (match) return match[0].replace('_', '-').toUpperCase();
+      const slug = String(value)
+        .trim()
+        .replace(/^https?:\/\/github\.com\//i, '')
+        .replace(/[^A-Za-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 48);
+      return slug ? 'BCOS-' + slug.toUpperCase() : 'BCOS-DEMO';
+    }
+
+    function fallbackBadge(id, selectedStyle) {
+      const height = selectedStyle === 'for-the-badge' ? 34 : 22;
+      const width = selectedStyle === 'for-the-badge' ? 280 : 210;
+      const fontSize = selectedStyle === 'for-the-badge' ? 13 : 11;
+      const radius = selectedStyle === 'flat-square' ? 0 : 4;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" role="img" aria-label="BCOS ${id}">
+        <rect width="${width}" height="${height}" rx="${radius}" fill="#0d1117"/>
+        <rect width="70" height="${height}" rx="${radius}" fill="#134e4a"/>
+        <text x="35" y="${height / 2 + 4}" fill="#a7f3d0" text-anchor="middle" font-family="Verdana,Arial,sans-serif" font-size="${fontSize}" font-weight="700">BCOS</text>
+        <text x="82" y="${height / 2 + 4}" fill="#e7f5e7" font-family="Verdana,Arial,sans-serif" font-size="${fontSize}">${id}</text>
+      </svg>`;
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+
+    function badgeUrl(id) {
+      return endpoint.value + encodeURIComponent(id) + '.svg?style=' + encodeURIComponent(style.value);
+    }
+
+    function verifyUrl(id) {
+      return 'https://rustchain.org/bcos/verify/' + encodeURIComponent(id);
+    }
+
+    function generate() {
+      const id = cleanCertId(input.value);
+      const badge = badgeUrl(id);
+      const verify = verifyUrl(id);
+      certId.textContent = id;
+      liveStatus.textContent = 'checking image';
+      previewLink.href = verify;
+      preview.src = badge;
+      markdown.value = `[![BCOS](${badge})](${verify})`;
+      html.value = `<a href="${verify}"><img src="${badge}" alt="BCOS certificate ${id}"></a>`;
+      status.textContent = 'Badge code generated.';
+    }
+
+    preview.addEventListener('load', () => {
+      liveStatus.textContent = 'live badge loaded';
+    });
+
+    preview.addEventListener('error', () => {
+      const id = certId.textContent || 'BCOS-DEMO';
+      preview.src = fallbackBadge(id, style.value);
+      liveStatus.textContent = 'using local preview fallback';
+      status.textContent = 'Badge endpoint did not return an image for this id. Embed code still targets the real BCOS endpoint.';
+    });
+
+    async function copyValue(element, label) {
+      await navigator.clipboard.writeText(element.value);
+      status.textContent = label + ' copied.';
+    }
+
+    document.getElementById('generate').addEventListener('click', generate);
+    document.getElementById('copyMarkdown').addEventListener('click', () => copyValue(markdown, 'Markdown'));
+    document.getElementById('copyHtml').addEventListener('click', () => copyValue(html, 'HTML'));
+    input.addEventListener('input', generate);
+    style.addEventListener('change', generate);
+    endpoint.addEventListener('change', generate);
+    generate();
+  </script>
+</body>
+</html>
