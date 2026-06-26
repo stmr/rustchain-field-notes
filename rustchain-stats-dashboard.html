@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RustChain Live Stats Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .dashboard {
+      max-width: 1100px;
+    }
+
+    .toolbar,
+    .status-line,
+    .metric-grid,
+    .wide-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .toolbar {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      margin: 24px 0;
+    }
+
+    .button {
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      font: 700 0.9rem/1 system-ui, sans-serif;
+      padding: 12px 16px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font: 0.9rem/1.4 system-ui, sans-serif;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #9ca3af;
+    }
+
+    .dot.ok {
+      background: #2f8a4c;
+    }
+
+    .dot.warn {
+      background: #b7791f;
+    }
+
+    .metric-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 28px 0;
+    }
+
+    .metric,
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 18px;
+    }
+
+    .metric span,
+    .panel h2,
+    .panel small {
+      color: var(--muted);
+      font: 0.85rem/1.4 system-ui, sans-serif;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 6px;
+      font: 700 clamp(1.7rem, 5vw, 2.7rem)/1.05 system-ui, sans-serif;
+    }
+
+    .metric small {
+      display: block;
+      margin-top: 8px;
+    }
+
+    .wide-grid {
+      grid-template-columns: 1.15fr 0.85fr;
+      align-items: start;
+    }
+
+    .panel h2 {
+      margin: 0 0 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font: 0.98rem/1.45 system-ui, sans-serif;
+    }
+
+    .list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+    }
+
+    .list li:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--line);
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width 180ms ease;
+    }
+
+    @media (max-width: 820px) {
+      .metric-grid,
+      .wide-grid,
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="dashboard">
+    <header>
+      <p class="kicker">Bounty #1600 dashboard</p>
+      <h1>RustChain Live Stats Dashboard</h1>
+      <p class="lede">Live public explorer metrics for node health, epoch state, enrolled miners, supply, and agent-economy activity. The page refreshes every 30 seconds and works on mobile without a backend.</p>
+    </header>
+
+    <section class="toolbar" aria-label="Dashboard controls">
+      <div class="status-line">
+        <span class="status-pill"><span id="statusDot" class="dot"></span><span id="statusText">Waiting for first refresh...</span></span>
+        <div class="progress" aria-hidden="true"><span id="refreshProgress"></span></div>
+      </div>
+      <button id="refreshButton" class="button" type="button">Refresh now</button>
+    </section>
+
+    <section class="metric-grid" aria-label="RustChain headline metrics">
+      <div class="metric">
+        <span>Current epoch</span>
+        <strong id="epoch">--</strong>
+        <small>Slot <span id="slot">--</span> / <span id="blocksPerEpoch">--</span></small>
+      </div>
+      <div class="metric">
+        <span>Enrolled miners</span>
+        <strong id="miners">--</strong>
+        <small><span id="recentMiners">--</span> recently attested</small>
+      </div>
+      <div class="metric">
+        <span>Total supply</span>
+        <strong id="supply">--</strong>
+        <small>RTC reported by `/epoch`</small>
+      </div>
+      <div class="metric">
+        <span>Epoch pot</span>
+        <strong id="epochPot">--</strong>
+        <small>RTC reward pool</small>
+      </div>
+    </section>
+
+    <section class="wide-grid" aria-label="Detailed RustChain panels">
+      <div class="panel">
+        <h2>Miner mix</h2>
+        <ul id="minerMix" class="list">
+          <li><span class="muted">Loading miner data...</span></li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h2>Node health</h2>
+        <ul class="list">
+          <li><span>Version</span><strong id="version">--</strong></li>
+          <li><span>Uptime</span><strong id="uptime">--</strong></li>
+          <li><span>Tip age</span><strong id="tipAge">--</strong></li>
+          <li><span>Database read/write</span><strong id="dbStatus">--</strong></li>
+        </ul>
+      </div>
+
+      <div class="panel">
+        <h2>Activity</h2>
+        <ul class="list">
+          <li><span>Agent jobs</span><strong id="agentJobs">--</strong></li>
+          <li><span>Completed jobs</span><strong id="completedJobs">--</strong></li>
+          <li><span>Agent RTC volume</span><strong id="agentVolume">--</strong></li>
+          <li><span>Anchor transactions</span><strong id="anchors">Checking...</strong></li>
+        </ul>
+        <p class="muted">The explorer exposes agent job volume through `/agent/stats`. Anchor transaction support is checked through `/api/anchors`; if unavailable, the dashboard reports that instead of inventing a transaction count.</p>
+      </div>
+
+      <div class="panel">
+        <h2>Recent jobs</h2>
+        <ul id="recentJobs" class="list">
+          <li><span class="muted">Loading jobs...</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      <p>Sources: <a href="https://explorer.rustchain.org/health">/health</a>, <a href="https://explorer.rustchain.org/epoch">/epoch</a>, <a href="https://explorer.rustchain.org/api/miners">/api/miners</a>, <a href="https://explorer.rustchain.org/agent/stats">/agent/stats</a>, and <a href="https://explorer.rustchain.org/agent/jobs">/agent/jobs</a>. Bounty claim wallet: <code>RTC5b1707df70157327db8630cd0b862857b2b848bd</code>.</p>
+    </footer>
+  </main>
+
+  <script>
+    const API = 'https://explorer.rustchain.org';
+    const refreshMs = 30000;
+    const fmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 });
+    let timer;
+    let progressTimer;
+
+    function text(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    async function json(path) {
+      const response = await fetch(API + path, { cache: 'no-store' });
+      if (!response.ok) throw new Error(path + ' returned ' + response.status);
+      return response.json();
+    }
+
+    function seconds(value) {
+      if (!value) return '--';
+      const hours = Math.floor(value / 3600);
+      const minutes = Math.floor((value % 3600) / 60);
+      if (hours >= 24) return Math.floor(hours / 24) + 'd ' + (hours % 24) + 'h';
+      return hours + 'h ' + minutes + 'm';
+    }
+
+    function setStatus(ok, message) {
+      const dot = document.getElementById('statusDot');
+      dot.className = 'dot ' + (ok ? 'ok' : 'warn');
+      text('statusText', message);
+    }
+
+    function startProgress() {
+      const bar = document.getElementById('refreshProgress');
+      let elapsed = 0;
+      clearInterval(progressTimer);
+      bar.style.width = '0%';
+      progressTimer = setInterval(() => {
+        elapsed = Math.min(refreshMs, elapsed + 1000);
+        bar.style.width = Math.round((elapsed / refreshMs) * 100) + '%';
+      }, 1000);
+    }
+
+    function renderMinerMix(miners) {
+      const counts = new Map();
+      const now = Date.now() / 1000;
+      let recent = 0;
+      for (const miner of miners) {
+        const label = miner.hardware_type || miner.device_arch || miner.device_family || 'Unknown';
+        counts.set(label, (counts.get(label) || 0) + 1);
+        if (miner.last_attest && now - miner.last_attest < 3600) recent += 1;
+      }
+      text('recentMiners', fmt.format(recent));
+      const rows = [...counts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6)
+        .map(([label, count]) => '<li><span>' + escapeHtml(label) + '</span><strong>' + fmt.format(count) + '</strong></li>');
+      document.getElementById('minerMix').innerHTML = rows.join('') || '<li><span class="muted">No miners returned</span></li>';
+    }
+
+    function renderJobs(data) {
+      const jobs = (data.jobs || []).slice(0, 5);
+      const rows = jobs.map(job => {
+        const reward = job.reward_rtc == null ? '--' : fmt.format(job.reward_rtc) + ' RTC';
+        return '<li><span>' + escapeHtml(job.category || 'job') + '</span><strong>' + reward + '</strong></li>';
+      });
+      document.getElementById('recentJobs').innerHTML = rows.join('') || '<li><span class="muted">No jobs returned</span></li>';
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char]);
+    }
+
+    async function refresh() {
+      clearTimeout(timer);
+      try {
+        const [health, epoch, minerData, agentStats, jobsData, anchorData] = await Promise.allSettled([
+          json('/health'),
+          json('/epoch'),
+          json('/api/miners'),
+          json('/agent/stats'),
+          json('/agent/jobs'),
+          json('/api/anchors?limit=1&offset=0')
+        ]);
+
+        if (health.status === 'fulfilled') {
+          const h = health.value;
+          text('version', h.version || '--');
+          text('uptime', seconds(h.uptime_s));
+          text('tipAge', h.tip_age_slots == null ? '--' : fmt.format(h.tip_age_slots) + ' slots');
+          text('dbStatus', h.db_rw ? 'ok' : 'check');
+        }
+
+        if (epoch.status === 'fulfilled') {
+          const e = epoch.value;
+          text('epoch', fmt.format(e.epoch));
+          text('slot', fmt.format(e.slot));
+          text('blocksPerEpoch', fmt.format(e.blocks_per_epoch));
+          text('miners', fmt.format(e.enrolled_miners));
+          text('supply', fmt.format(e.total_supply_rtc));
+          text('epochPot', fmt.format(e.epoch_pot));
+        }
+
+        if (minerData.status === 'fulfilled') {
+          renderMinerMix(minerData.value.miners || []);
+        }
+
+        if (agentStats.status === 'fulfilled') {
+          const stats = agentStats.value.stats || {};
+          text('agentJobs', fmt.format(stats.total_jobs || 0));
+          text('completedJobs', fmt.format(stats.completed_jobs || 0));
+          text('agentVolume', fmt.format(stats.total_rtc_volume || 0) + ' RTC');
+        }
+
+        if (jobsData.status === 'fulfilled') {
+          renderJobs(jobsData.value);
+        }
+
+        if (anchorData.status === 'fulfilled' && anchorData.value.stats) {
+          text('anchors', fmt.format(anchorData.value.stats.total_anchors || 0));
+        } else {
+          text('anchors', 'endpoint unavailable');
+        }
+
+        setStatus(true, 'Live data refreshed at ' + new Date().toLocaleTimeString());
+      } catch (error) {
+        setStatus(false, 'Refresh failed: ' + error.message);
+      } finally {
+        startProgress();
+        timer = setTimeout(refresh, refreshMs);
+      }
+    }
+
+    document.getElementById('refreshButton').addEventListener('click', refresh);
+    refresh();
+  </script>
+</body>
+</html>
